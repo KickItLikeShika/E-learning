@@ -37,7 +37,7 @@ public class AuthService {
 
     public ResponseEntity register(RegisterRequest registerRequest) {
         User user = mapUserForRegister(registerRequest);
-        String validation = validateUserForRegister(user);
+        String validation = validateUser(user);
         if (validation == "NOT VALID") {
             return new ResponseEntity("SEE ANOTHER EMAIL OR USERNAME", HttpStatus.SEE_OTHER);
         } else {
@@ -59,11 +59,11 @@ public class AuthService {
         return user;
     }
 
-    private String encodePassword(String password) {
+    public String encodePassword(String password) {
         return passwordEncoder.encode(password);
     }
 
-    private String validateUserForRegister(User user) {
+    public String validateUser(User user) {
         String email = user.getEmail();
         String username = user.getUsername();
         if (userRepository.findUserByUsername(username) != null || userRepository.findUserByEmail(email) != null) {
