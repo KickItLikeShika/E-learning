@@ -1,6 +1,7 @@
 package com.elearning.service;
 
 import com.elearning.dto.RegisterRequest;
+import com.elearning.model.Role;
 import com.elearning.model.User;
 import com.elearning.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,10 @@ public class UserPropertiesService {
                 user.setPassword(authService.encodePassword(registerRequest.getPassword()));
             }
         }
+        if (user.getRoles().isEmpty() == true) {
+            user.addRoles(new Role("ADMIN"));
+        }
+        user.setEnabled(true);
         userRepository.save(user);
         return new ResponseEntity("User has been updated!", HttpStatus.OK);
     }
