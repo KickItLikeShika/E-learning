@@ -28,9 +28,7 @@ public class UserPropertiesService {
     }
 
     private ResponseEntity mapEditingUser(RegisterRequest registerRequest) {
-        UserDetails userDetails = authService.getCurrUser();
-        String username = userDetails.getUsername();
-        User user = userRepository.findUserByUsername(username);
+        User user = authService.getCurrUser();
 
         if (registerRequest.getFirstname().isEmpty() == true || registerRequest.getFirstname().isBlank() == true) {
             return new ResponseEntity("Firstname can not be blank", HttpStatus.BAD_REQUEST);

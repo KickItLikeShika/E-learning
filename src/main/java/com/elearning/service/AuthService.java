@@ -83,10 +83,11 @@ public class AuthService {
         return new ResponseEntity(jwtProvider.generateToken(authentication), HttpStatus.OK);
     }
 
-    public org.springframework.security.core.userdetails.User getCurrUser() {
+    public User getCurrUser() {
         org.springframework.security.core.userdetails.User principal =
                 (org.springframework.security.core.userdetails.User) SecurityContextHolder
                         .getContext().getAuthentication().getPrincipal();
-        return principal;
+        User user = userRepository.findUserByUsername(principal.getUsername());
+        return user;
     }
 }

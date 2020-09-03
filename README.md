@@ -2,6 +2,12 @@
 
 E-learning RESTful API based on Java, SpringBoot, Spring security, JWT, hibernate with MySQL.
 
+# Overview
+
+- This is a big project with a lot of details involved in it, First the users are able to register and login, then they can get all the "Published" courses or get a specific course with its id without showing the lessons, assignments to them because they are not enrolled in this course, they also can not see the enrollment requests to this course because they are not instructors in this course.
+
+- The users can add course but the courses are not gonna be published until they add at least one lesson and one assignment.
+
 # REST API Endpoints
 
 Open Postman 'https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=ar'
@@ -11,6 +17,12 @@ Open Postman 'https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdgg
 		/auth
 			POST /register - Register - required: firstname, lastname, email, username, password, phone nubmer
 			POST /login - Login - required: username, password
+		/edit
+			PUT /user - Edit user infro required: firstname, lastname, email, username, password, phone number
+		/course
+			POST /add-course - Add the course info - required: title, description
+			POST /add-course-lesson/{course id} - Add the lessons to this course - required: reading
+			PSOT /add-course-assignment/{course id} -- Add the assignments to this course - required: question, answer
 
 
 # How to use 

@@ -1,5 +1,6 @@
 package com.elearning.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
@@ -29,15 +30,19 @@ public class Course {
     @Column(nullable = false)
     private Date publishedOn;
 
+//    @JsonIgnore
     @OneToMany(mappedBy = "course")
     private List<Review> reviews = new ArrayList<>();
 
+//    @JsonIgnore
     @OneToMany(mappedBy = "course")
     private List<EnrollmentRequest> enrollmentRequests = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "course")
     private List<Assignment> assignments = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "course")
     private List<Lesson> lessons = new ArrayList<>();
 
@@ -115,6 +120,10 @@ public class Course {
         this.enrollmentRequests.remove(enrollmentRequest);
     }
 
+    public void clearEnrollmentRequests() {
+        this.enrollmentRequests.clear();
+    }
+
     public List<Assignment> getAssignments() {
         return assignments;
     }
@@ -127,6 +136,10 @@ public class Course {
         this.assignments.remove(assignment);
     }
 
+    public void clearAssignments() {
+        this.assignments.clear();
+    }
+
     public List<Lesson> getLessons() {
         return lessons;
     }
@@ -137,5 +150,9 @@ public class Course {
 
     public void removeLessons(Lesson lesson) {
         this.lessons.remove(lesson);
+    }
+
+    public void clearLessons() {
+        this.lessons.clear();
     }
 }
