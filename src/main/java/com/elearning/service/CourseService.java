@@ -1,8 +1,6 @@
 package com.elearning.service;
 
-import com.elearning.dto.AssignmentDto;
 import com.elearning.dto.CourseInfoDto;
-import com.elearning.dto.LessonDto;
 import com.elearning.model.*;
 import com.elearning.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,9 @@ public class CourseService {
     private AuthService authService;
     private UserRepository userRepository;
     private EnrollmentRepository enrollmentRepository;
+    private ReviewRepository reviewRepository;
+    private EnrollmentRequestRepository enrollmentRequestRepository;
+    private Utility utility;
 
     @Autowired
     public CourseService(CourseRepository courseRepository,
@@ -32,7 +33,10 @@ public class CourseService {
                          InstructionRepository instructionRepository,
                          AuthService authService,
                          UserRepository userRepository,
-                         EnrollmentRepository enrollmentRepository) {
+                         EnrollmentRepository enrollmentRepository,
+                         ReviewRepository reviewRepository,
+                         EnrollmentRequestRepository enrollmentRequestRepository,
+                         Utility utility) {
         this.courseRepository = courseRepository;
         this.assignmentRepository = assignmentRepository;
         this.lessonRepository = lessonRepository;
@@ -40,6 +44,9 @@ public class CourseService {
         this.authService = authService;
         this.userRepository = userRepository;
         this.enrollmentRepository = enrollmentRepository;
+        this.reviewRepository = reviewRepository;
+        this.enrollmentRequestRepository = enrollmentRequestRepository;
+        this.utility = utility;
     }
 
     public ResponseEntity addCourseInfo(CourseInfoDto courseInfoDto) {
@@ -66,94 +73,19 @@ public class CourseService {
         enrollment.setUserId(user.getId());
         enrollmentRepository.save(enrollment);
 
-        return new ResponseEntity("Course info added but the course is not published yet, " +
-                "you have to add the lessons and the assignments", HttpStatus.OK);
-    }
-
-    public ResponseEntity addCourseLessons(long id, LessonDto lessonDto) {
-        return mapAddingCourseLessons(id, lessonDto);
-    }
-
-    private ResponseEntity mapAddingCourseLessons(long id, LessonDto lessonDto) {
-        Course course = courseRepository.findCourseById(id);
-
-        boolean flag = checkInstruction(course);
-        if(flag == false) {
-            return new ResponseEntity("You're not an instructor in this course, " +
-                    "you can not add anything!", HttpStatus.OK);
-        }
-
-        Lesson lesson = new Lesson();
-        lesson.setReading(lessonDto.getReading());
-        lesson.setCourse(course);
-        course.addLessons(lesson);
-        lessonRepository.save(lesson);
-
-        course = checkPublish(course);
-        courseRepository.save(course);
-
-        return new ResponseEntity("Lesson added to this course -" +
-                course.getTitle() + "-", HttpStatus.OK);
-    }
-
-    public ResponseEntity addCourseAssignments(long id, AssignmentDto assignmentDto) {
-        return mapAddingCourseAssignment(id, assignmentDto);
-    }
-
-    private ResponseEntity mapAddingCourseAssignment(long id, AssignmentDto assignmentDto) {
-        Course course = courseRepository.findCourseById(id);
-
-        boolean flag = checkInstruction(course);
-        if(flag == false) {
-            return new ResponseEntity("You're not an instructor in this course, " +
-                    "you can not add anything!", HttpStatus.OK);
-        }
-
-        Assignment assignment = new Assignment();
-        assignment.setQuestion(assignmentDto.getQuestion());
-        assignment.setCorrectAnswer(assignmentDto.getCorrectAnswer().toLowerCase());
-        assignment.setCourse(course);
-        course.addAssignments(assignment);
-        assignmentRepository.save(assignment);
-
-        course = checkPublish(course);
-        courseRepository.save(course);
-
-        return new ResponseEntity("Assignment has been added to this course -" +
-                course.getTitle() + "-", HttpStatus.OK);
-    }
-
-    private boolean checkInstruction(Course course) {
-        User user  = authService.getCurrUser();
-        List<Instruction> instructions = instructionRepository.findInstructionsByCourseId(course.getId());
-        boolean flag = false;
-        long userId = user.getId();
-        for (int i = 0; i < instructions.size(); i++) {
-            Instruction instruction = instructions.get(i);
-            if(instruction.getUserId() == userId) {
-                flag = true;
-                break;
-            }
-        }
-        return flag;
-    }
-
-    private Course checkPublish(Course course) {
-        if(course.getLessons().isEmpty() == false && course.getAssignments().isEmpty() == false) {
-            course.setPublished("YES");
-            course.setPublishedOn(Date.from(Instant.now()));
-        }
-        return course;
+        return new ResponseEntity("Course info added " +
+                "but the course is not published yet, " +
+                "you have to add the lessons " +
+                "and the assignments", HttpStatus.OK);
     }
 
     public ResponseEntity<List<Course>> getAllCourses() {
         List<Course> courses = courseRepository.findAll();
+        courses = utility.checkPublish(courses);
         for(int i = 0; i < courses.size(); i++) {
             Course course = courses.get(i);
             course.clearEnrollmentRequests();
-            if(course.getPublished().equals("NO")) {
-                courses.remove(course);
-            }
+            course = utility.checkEnrollment(course);
         }
         return new ResponseEntity(courses, HttpStatus.OK);
     }
@@ -164,21 +96,115 @@ public class CourseService {
         if (course.getPublished().equals("NO")) {
             return new ResponseEntity<Course>(HttpStatus.OK);
         }
-        User user = authService.getCurrUser();
-        List<Enrollment> enrollments = enrollmentRepository.findEnrollmentsByUserId(user.getId());
-        if (enrollments.isEmpty() == true) {
-            course.clearAssignments();
-            course.clearLessons();
-        }
-        for(int i = 0; i < enrollments.size(); i++) {
-            Enrollment enrollment = enrollments.get(i);
-            long courseId = enrollment.getCourseId();
-            if (courseId != id) {
-                course.clearAssignments();
-                course.clearLessons();
-                return new ResponseEntity(course, HttpStatus.OK);
-            }
-        }
+        course = utility.checkEnrollment(course);
         return new ResponseEntity(course, HttpStatus.OK);
     }
+
+    public ResponseEntity<List<Course>> getCoursesByName(String title) {
+        List<Course> courses = courseRepository.
+                findCoursesByTitle(title);
+        courses = utility.checkPublish(courses);
+        for(int i = 0; i < courses.size(); i++) {
+            Course course = courses.get(i);
+            course = utility.checkEnrollment(course);
+        }
+        return new ResponseEntity<>(courses, HttpStatus.OK);
+    }
+
+    public ResponseEntity editCourseInfo(long id,
+                                         CourseInfoDto courseInfoDto) {
+        return mapEditingCourseInfo(id, courseInfoDto);
+    }
+
+    private ResponseEntity mapEditingCourseInfo(long id,
+                                                CourseInfoDto courseInfoDto) {
+        Course course = courseRepository.findCourseById(id);
+
+        boolean editing = utility.checkAbilityToManageCourse(id);
+        if (editing == false) {
+            return new ResponseEntity("You are not allowed " +
+                    "to edit this course", HttpStatus.BAD_REQUEST);
+        }
+
+        if (courseInfoDto.getTitle().isEmpty() == true
+                || courseInfoDto.getTitle().isBlank() == true) {
+            return new ResponseEntity("Course title can " +
+                    "not be empty", HttpStatus.BAD_REQUEST);
+        } else {
+            if (courseInfoDto.getTitle() != null) {
+                course.setTitle(courseInfoDto.getTitle());
+            } else {
+                course.setTitle(course.getTitle());
+            }
+        }
+        if (courseInfoDto.getDescription().isEmpty() == true
+                || courseInfoDto.getDescription().isBlank() == true) {
+            return new ResponseEntity("Course Description " +
+                    "can not be empty", HttpStatus.BAD_REQUEST);
+        } else {
+            if (courseInfoDto.getDescription() != null) {
+                course.setDescription(courseInfoDto.getDescription());
+            } else {
+                course.setDescription(course.getDescription());
+            }
+        }
+
+        courseRepository.save(course);
+        return new ResponseEntity("Course info " +
+                "has been edited!", HttpStatus.OK);
+    }
+
+    public ResponseEntity deleteCourse(long id) {
+        return mapDeletingCourse(id);
+    }
+
+    private ResponseEntity mapDeletingCourse(long id) {
+        Course course = courseRepository.findCourseById(id);
+        List<Assignment> assignments = course.getAssignments();
+        List<Lesson> lessons = course.getLessons();
+        List<Review> reviews = course.getReviews();
+        List<EnrollmentRequest> enrollmentRequests =
+                course.getEnrollmentRequests();
+
+        boolean delete = utility.checkAbilityToManageCourse(id);
+        if (delete == false) {
+            return new ResponseEntity("You are not allowed" +
+                    " to delete this course", HttpStatus.BAD_REQUEST);
+        }
+
+        deleteAnythingRelatedToCourse(course, reviews,
+                lessons, assignments, enrollmentRequests);
+
+        return new ResponseEntity("Course has been " +
+                "deleted!", HttpStatus.OK);
+    }
+
+    private void deleteAnythingRelatedToCourse(Course course,
+                                               List<Review> reviews,
+                                               List<Lesson> lessons,
+                                               List<Assignment> assignments,
+                                               List<EnrollmentRequest> enrollmentRequests) {
+        for(int i = 0; i < assignments.size(); i++) {
+            Assignment assignment = assignments.get(i);
+            assignmentRepository.delete(assignment);
+        }
+        for(int i = 0; i < lessons.size(); i++) {
+            Lesson lesson = lessons.get(i);
+            lessonRepository.delete(lesson);
+        }
+        for(int i = 0; i < reviews.size(); i++) {
+            Review review = reviews.get(i);
+            reviewRepository.delete(review);
+        }
+        for(int i = 0; i < enrollmentRequests.size(); i++) {
+            EnrollmentRequest enrollmentRequest = enrollmentRequests.get(i);
+            enrollmentRequestRepository.delete(enrollmentRequest);
+        }
+        course.clearAssignments();
+        course.clearLessons();
+        course.clearEnrollmentRequests();
+        course.clearReviews();
+        courseRepository.delete(course);
+    }
+
 }

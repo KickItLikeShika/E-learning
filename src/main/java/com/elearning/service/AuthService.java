@@ -39,7 +39,7 @@ public class AuthService {
         User user = mapUserForRegister(registerRequest);
         String validation = validateUser(user);
         if (validation == "NOT VALID") {
-            return new ResponseEntity("SEE ANOTHER EMAIL OR USERNAME", HttpStatus.SEE_OTHER);
+            return new ResponseEntity("SEE ANOTHER EMAIL OR USERNAME", HttpStatus.BAD_REQUEST);
         } else {
             user.setEnabled(true);
             userRepository.save(user);

@@ -108,6 +108,10 @@ public class Course {
         this.reviews.remove(review);
     }
 
+    public void clearReviews() {
+        this.reviews.clear();
+    }
+
     public List<EnrollmentRequest> getEnrollmentRequests() {
         return enrollmentRequests;
     }
