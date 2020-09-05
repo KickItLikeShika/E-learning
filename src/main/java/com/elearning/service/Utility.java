@@ -1,9 +1,6 @@
 package com.elearning.service;
 
-import com.elearning.model.Course;
-import com.elearning.model.Enrollment;
-import com.elearning.model.Instruction;
-import com.elearning.model.User;
+import com.elearning.model.*;
 import com.elearning.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -132,5 +129,31 @@ public class Utility {
             course.setPublished("NO");
         }
         return course;
+    }
+
+    public boolean checkEnrollmentRequest(long id, User user) {
+        List<EnrollmentRequest> enrollmentRequests =
+                enrollmentRequestRepository.findEnrollmentRequestsByUser(user);
+        for(int i = 0; i < enrollmentRequests.size(); i++) {
+            EnrollmentRequest enrollmentRequest1 = enrollmentRequests.get(i);
+            Course course1 = enrollmentRequest1.getCourse();
+            long course1Id = course1.getId();
+            if (id == course1Id
+                    && ((enrollmentRequest1.getStatus().equals("PENDING"))
+                    || (enrollmentRequest1.getStatus().equals("ACCEPTED")))) {
+                return true;
+            }
+        }
+
+        List<Enrollment> enrollments = enrollmentRepository
+                .findEnrollmentsByUserId(user.getId());
+        for (int i = 0; i < enrollments.size(); i++) {
+            Enrollment enrollment = enrollments.get(i);
+            long courseId = enrollment.getCourseId();
+            if (id == courseId) {
+                return true;
+            }
+        }
+        return false;
     }
 }

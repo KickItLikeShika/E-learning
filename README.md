@@ -6,13 +6,16 @@ E-learning RESTful API based on Java, SpringBoot, Spring security, JWT, hibernat
 
 - This is a big project with a lot of details involved in it, First the users are able to register and login, then they can get all the "Published" courses or get a specific course with its id without showing the lessons/assignments to them because they are not enrolled in this course, they also can not see the enrollment requests to this course because they are not instructors in this course.
 
-- The users can add course but the courses are not gonna be published until they add at least one lesson and one assignment.
+- The users can add course but the courses are not gonna be published until they add one lesson and one assignment at least.
 
 - Instructors only can edit or delete their courses/lessons/assignments or even add new lessons/assignemnts after the course got published.
 
+- Users are able to send enrollment request for a specific course and wait till one of the instructors of this course accept or reject him, if he got accepted he is enrolled in this course now, then he can reach all the course materials, but if he got rejected he can send another enrollment request, otherwise(accepted, pending) he can not send enrollment request.
+
+
 # REST API Endpoints
 
-Open Postman 'https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=ar'
+Open Postman 'https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop'
 
 	http://localhost:8080
 		
@@ -34,6 +37,11 @@ Open Postman 'https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdgg
 			DELETE /delete-course/{course id} - Delete a course
 			DELETE /delete-course-lesson/{lesson id} - Delete a course lesson
 			DELETE /delete-course-assignment/{assignment id} - Delete a course assignment 
+		/enroll
+			POST /send-enrollment-request/{course id} - Send enrollment request to the instructor of this course
+			DELETE /cancel-enrollment-request/{enrollment request id} - Cancel the enrollment request to you have sent to this course
+			POST /accept-enrollment-request/{enrollment request id} - Accept an enrollment request to a course (Instructors only)
+			POST /reject-enrollment-request/{enrollment request id} - Reject an enrollment request to a course (Instructors only)
 
 # How to use 
 
@@ -44,4 +52,6 @@ Follow the same way for each request.
 
 # Hints 
 
-- All inputs and outputs user JSON format.
+- All inputs and outputs using JSON format.
+
+- If you want to show the JSON format in postman for (lesson, assignment, etc..) remove '@JsonIgnore' annotation from the model classes.

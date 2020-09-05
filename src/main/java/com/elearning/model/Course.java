@@ -34,7 +34,7 @@ public class Course {
     @OneToMany(mappedBy = "course")
     private List<Review> reviews = new ArrayList<>();
 
-//    @JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "course")
     private List<EnrollmentRequest> enrollmentRequests = new ArrayList<>();
 
