@@ -12,6 +12,9 @@ E-learning RESTful API based on Java, SpringBoot, Spring security, JWT, hibernat
 
 - Users are able to send enrollment request for a specific course and wait till one of the instructors of this course accept or reject him, if he got accepted he is enrolled in this course now, then he can reach all the course materials, but if he got rejected he can send another enrollment request, otherwise(accepted, pending) he can not send enrollment request.
 
+- Only enrolled users can add a review(add feedback, add rank must be out of 5) for a course, and they are also allowed to edit the review or delete it. But instructors for this course can not add reviews.
+
+# Database Design
 
 # REST API Endpoints
 
@@ -42,6 +45,10 @@ Open Postman 'https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdgg
 			DELETE /cancel-enrollment-request/{enrollment request id} - Cancel the enrollment request to you have sent to this course
 			POST /accept-enrollment-request/{enrollment request id} - Accept an enrollment request to a course (Instructors only)
 			POST /reject-enrollment-request/{enrollment request id} - Reject an enrollment request to a course (Instructors only)
+		/review
+			POST /add-review/{course id} - Add a review for a course - required: Feedback, rank out of 5
+			PUT /edit-review/{review id} - Edit an existing review - required: Feedback, rank out of 5
+			DELETE /delete-review/{review id} - Delete and existing review
 
 # How to use 
 

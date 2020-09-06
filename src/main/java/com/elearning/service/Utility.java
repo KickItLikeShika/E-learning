@@ -47,16 +47,14 @@ public class Utility {
         User user  = authService.getCurrUser();
         List<Instruction> instructions = instructionRepository.
                 findInstructionsByCourseId(course.getId());
-        boolean flag = false;
         long userId = user.getId();
         for (int i = 0; i < instructions.size(); i++) {
             Instruction instruction = instructions.get(i);
             if(instruction.getUserId() == userId) {
-                flag = true;
-                break;
+                return true;
             }
         }
-        return flag;
+        return false;
     }
 
     public Course publishCourse(Course course) {
@@ -68,45 +66,16 @@ public class Utility {
         return course;
     }
 
-    public Course checkEnrollment(Course course) {
+    public boolean checkEnrollment(Course course) {
         User user = authService.getCurrUser();
 
         List<Enrollment> enrollments = enrollmentRepository.
                 findEnrollmentsByUserId(user.getId());
-        if (enrollments.isEmpty() == true) {
-            course.clearAssignments();
-            course.clearLessons();
-        }
-
-        boolean enrolled = false;
         long id = course.getId();
         for (int i = 0; i < enrollments.size(); i++) {
             Enrollment enrollment = enrollments.get(i);
             long courseId = enrollment.getCourseId();
             if (id == courseId) {
-                enrolled = true;
-            }
-        }
-        if (enrolled == false) {
-            course.clearLessons();
-            course.clearAssignments();
-            return course;
-        }
-
-        return course;
-    }
-
-    public boolean checkAbilityToManageCourse(long id) {
-        // must be instructor
-        User user = authService.getCurrUser();
-        long currLoggedUserId = user.getId();
-
-        List<Instruction> instructions = instructionRepository
-                .findInstructionsByCourseId(id);
-        for (int i = 0; i < instructions.size(); i++) {
-            Instruction instruction = instructions.get(i);
-            long instructorId = instruction.getUserId();
-            if (currLoggedUserId == instructorId) {
                 return true;
             }
         }

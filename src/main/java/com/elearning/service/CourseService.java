@@ -85,7 +85,12 @@ public class CourseService {
         for(int i = 0; i < courses.size(); i++) {
             Course course = courses.get(i);
             course.clearEnrollmentRequests();
-            course = utility.checkEnrollment(course);
+            boolean enrolled = utility.checkEnrollment(course);
+            if (enrolled == false) {
+                course.clearEnrollmentRequests();
+                course.clearLessons();
+                course.clearAssignments();
+            }
         }
         return new ResponseEntity(courses, HttpStatus.OK);
     }
@@ -96,7 +101,12 @@ public class CourseService {
         if (course.getPublished().equals("NO")) {
             return new ResponseEntity<Course>(HttpStatus.OK);
         }
-        course = utility.checkEnrollment(course);
+        boolean enrolled = utility.checkEnrollment(course);
+        if (enrolled == false) {
+            course.clearEnrollmentRequests();
+            course.clearLessons();
+            course.clearAssignments();
+        }
         return new ResponseEntity(course, HttpStatus.OK);
     }
 
@@ -106,7 +116,12 @@ public class CourseService {
         courses = utility.checkPublish(courses);
         for(int i = 0; i < courses.size(); i++) {
             Course course = courses.get(i);
-            course = utility.checkEnrollment(course);
+            boolean enrolled = utility.checkEnrollment(course);
+            if (enrolled == false) {
+                course.clearEnrollmentRequests();
+                course.clearLessons();
+                course.clearAssignments();
+            }
         }
         return new ResponseEntity<>(courses, HttpStatus.OK);
     }
@@ -120,7 +135,7 @@ public class CourseService {
                                                 CourseInfoDto courseInfoDto) {
         Course course = courseRepository.findCourseById(id);
 
-        boolean editing = utility.checkAbilityToManageCourse(id);
+        boolean editing = utility.checkInstruction(course);
         if (editing == false) {
             return new ResponseEntity("You are not allowed " +
                     "to edit this course", HttpStatus.BAD_REQUEST);
@@ -166,7 +181,7 @@ public class CourseService {
         List<EnrollmentRequest> enrollmentRequests =
                 course.getEnrollmentRequests();
 
-        boolean delete = utility.checkAbilityToManageCourse(id);
+        boolean delete = utility.checkInstruction(course);
         if (delete == false) {
             return new ResponseEntity("You are not allowed" +
                     " to delete this course", HttpStatus.BAD_REQUEST);

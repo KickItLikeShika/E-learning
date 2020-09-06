@@ -71,7 +71,7 @@ public class LessonService {
         Lesson lesson = lessonRepository.findLessonById(id);
         Course course = lesson.getCourse();
 
-        boolean edit = utility.checkAbilityToManageCourse(course.getId());
+        boolean edit = utility.checkInstruction(course);
         if (edit == false) {
             return new ResponseEntity("You are not" +
                     "allowed to edit this course", HttpStatus.BAD_REQUEST);
@@ -106,7 +106,7 @@ public class LessonService {
     private ResponseEntity mapDeletingCourseLesson(long id) {
         Lesson lesson = lessonRepository.findLessonById(id);
         Course course = lesson.getCourse();
-        boolean delete = utility.checkAbilityToManageCourse(course.getId());
+        boolean delete = utility.checkInstruction(course);
         if (delete == false) {
             return new ResponseEntity("You are not " +
                     "allowed to delete this lesson", HttpStatus.BAD_REQUEST);

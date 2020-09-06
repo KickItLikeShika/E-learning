@@ -73,7 +73,7 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findAssignmentById(id);
         Course course = assignment.getCourse();
 
-        boolean edit = utility.checkAbilityToManageCourse(course.getId());
+        boolean edit = utility.checkInstruction(course);
         if (edit == false) {
             return new ResponseEntity("You are not" +
                     "allowed to edit this course", HttpStatus.BAD_REQUEST);
@@ -115,7 +115,7 @@ public class AssignmentService {
     private ResponseEntity mapDeletingCourseAssignment(long id) {
         Assignment assignment = assignmentRepository.findAssignmentById(id);
         Course course = assignment.getCourse();
-        boolean delete = utility.checkAbilityToManageCourse(course.getId());
+        boolean delete = utility.checkInstruction(course);
         if (delete == false) {
             return new ResponseEntity("You are not " +
                     "allowed to delete this assignment", HttpStatus.BAD_REQUEST);
