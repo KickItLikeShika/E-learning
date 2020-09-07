@@ -21,6 +21,7 @@ public class Utility {
     private EnrollmentRepository enrollmentRepository;
     private ReviewRepository reviewRepository;
     private EnrollmentRequestRepository enrollmentRequestRepository;
+    private UserAnswerRepository userAnswerRepository;
 
     @Autowired
     public Utility(CourseRepository courseRepository,
@@ -31,7 +32,8 @@ public class Utility {
                          UserRepository userRepository,
                          EnrollmentRepository enrollmentRepository,
                          ReviewRepository reviewRepository,
-                         EnrollmentRequestRepository enrollmentRequestRepository) {
+                         EnrollmentRequestRepository enrollmentRequestRepository,
+                         UserAnswerRepository userAnswerRepository) {
         this.courseRepository = courseRepository;
         this.assignmentRepository = assignmentRepository;
         this.lessonRepository = lessonRepository;
@@ -41,6 +43,7 @@ public class Utility {
         this.enrollmentRepository = enrollmentRepository;
         this.reviewRepository = reviewRepository;
         this.enrollmentRequestRepository = enrollmentRequestRepository;
+        this.userAnswerRepository = userAnswerRepository;
     }
 
     public boolean checkInstruction(Course course) {
@@ -124,5 +127,20 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    public void checkUserAnswer(Assignment assignment,
+                                 List<UserAnswer> userAnswers,
+                                 User user) {
+        for (int i = 0; i < userAnswers.size(); i++) {
+            UserAnswer userAnswerr = userAnswers.get(i);
+            User user1 = userAnswerr.getUser();
+            if (user.getId() == user1.getId()) {
+                assignment.removeUserAnswer(userAnswerr);
+                userAnswerr.setUser(null);
+                userAnswerr.setAssignment(null);
+                userAnswerRepository.delete(userAnswerr);
+            }
+        }
     }
 }

@@ -30,7 +30,7 @@ public class Course {
     @Column(nullable = false)
     private Date publishedOn;
 
-//    @JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "course")
     private List<Review> reviews = new ArrayList<>();
 

@@ -15,6 +15,8 @@ public class UserAnswer {
     @Column(nullable = false)
     private String answer;
 
+    private String grade;
+
     @ManyToOne
     private User user;
 
@@ -23,8 +25,10 @@ public class UserAnswer {
 
     public UserAnswer() {}
 
-    public UserAnswer(String answer, User user, Assignment assignment) {
+    public UserAnswer(String answer, String grade,
+                      User user, Assignment assignment) {
         this.answer = answer;
+        this.grade = grade;
         this.user = user;
         this.assignment = assignment;
     }
@@ -43,6 +47,14 @@ public class UserAnswer {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
     }
 
     public User getUser() {
