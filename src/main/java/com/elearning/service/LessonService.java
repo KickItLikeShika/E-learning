@@ -41,11 +41,10 @@ public class LessonService {
         Course course = courseRepository.findCourseById(id);
 
         boolean flag = utility.checkInstruction(course);
-        if(flag == false) {
+        if(flag == false)
             return new ResponseEntity("You're not an " +
                     "instructor in this course, " +
                     "you can not add anything!", HttpStatus.OK);
-        }
 
         Lesson lesson = new Lesson();
         lesson.setReading(lessonDto.getReading());
@@ -53,7 +52,6 @@ public class LessonService {
         course.addLessons(lesson);
         lessonRepository.save(lesson);
 
-        course = utility.publishCourse(course);
         courseRepository.save(course);
 
         return new ResponseEntity("Lesson added to " +
@@ -72,10 +70,9 @@ public class LessonService {
         Course course = lesson.getCourse();
 
         boolean edit = utility.checkInstruction(course);
-        if (edit == false) {
+        if (edit == false)
             return new ResponseEntity("You are not" +
                     "allowed to edit this course", HttpStatus.BAD_REQUEST);
-        }
 
         course.removeLessons(lesson);
 
@@ -84,11 +81,10 @@ public class LessonService {
             return new ResponseEntity("Lesson can not " +
                     "be empty", HttpStatus.BAD_REQUEST);
         } else {
-            if (lessonDto.getReading() != null) {
+            if (lessonDto.getReading() != null)
                 lesson.setReading(lessonDto.getReading());
-            } else {
+            else
                 lesson.setReading(lesson.getReading());
-            }
         }
 
         course.addLessons(lesson);
@@ -107,15 +103,14 @@ public class LessonService {
         Lesson lesson = lessonRepository.findLessonById(id);
         Course course = lesson.getCourse();
         boolean delete = utility.checkInstruction(course);
-        if (delete == false) {
+        if (delete == false)
             return new ResponseEntity("You are not " +
                     "allowed to delete this lesson", HttpStatus.BAD_REQUEST);
-        }
+
         course.removeLessons(lesson);
         lesson.setCourse(null);
         courseRepository.save(course);
         lessonRepository.delete(lesson);
-        course = utility.checkPublishAfterDeletion(course);
         courseRepository.save(course);
         return new ResponseEntity("Lesson has been" +
                 " deleted", HttpStatus.OK);

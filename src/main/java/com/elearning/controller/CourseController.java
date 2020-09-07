@@ -51,6 +51,16 @@ public class CourseController {
         return assignmentService.addCourseAssignments(id, assignmentDto);
     }
 
+    @RequestMapping(value = "/publish/{id}", method = RequestMethod.PUT)
+    public ResponseEntity publishCourse(@PathVariable long id) {
+        return courseService.publishCourse(id);
+    }
+
+    @RequestMapping(value = "/hide/{id}", method = RequestMethod.PUT)
+    public ResponseEntity hideCourse(@PathVariable long id) {
+        return courseService.hideCourse(id);
+    }
+
     @RequestMapping(value = "/get-all-courses", method = RequestMethod.GET)
     public ResponseEntity<List<Course>> getAllCourses() {
         return courseService.getAllCourses();

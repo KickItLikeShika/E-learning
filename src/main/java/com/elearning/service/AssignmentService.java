@@ -55,7 +55,6 @@ public class AssignmentService {
         course.addAssignments(assignment);
         assignmentRepository.save(assignment);
 
-        course = utility.publishCourse(course);
         courseRepository.save(course);
 
         return new ResponseEntity("Assignment has been " +
@@ -124,7 +123,6 @@ public class AssignmentService {
         assignment.setCourse(null);
         courseRepository.save(course);
         assignmentRepository.delete(assignment);
-        course = utility.checkPublishAfterDeletion(course);
         courseRepository.save(course);
         return new ResponseEntity("Assignment has been " +
                 "deleted", HttpStatus.OK);

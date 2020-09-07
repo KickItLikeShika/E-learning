@@ -10,7 +10,7 @@ E-learning RESTful API based on Java, SpringBoot, Spring security, JWT, hibernat
 
 - Users also can not see the enrollment requests to courses because they are not instructors in this course.
 
-- The users can add course but the courses are not gonna be published until they add one lesson and one assignment at least.
+- The users can add course but the courses are not gonna be published until they publish the course themselves.
 
 - Instructors only can edit or delete their courses/lessons/assignments or even add new lessons/assignemnts after the course got published.
 
@@ -36,7 +36,9 @@ Open Postman 'https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdgg
 		/course
 			POST /add-course - Add the course info - required: title, description
 			POST /add-course-lesson/{course id} - Add the lessons to this course - required: reading
-			PSOT /add-course-assignment/{course id} -- Add the assignments to this course - required: question, answer
+			PSOT /add-course-assignment/{course id} - Add the assignments to this course - required: question, answer
+			PUT /publish/{course id} - Publish the course if hidden
+			PUT /hide/{course id} - Hide the course if published
 			GET /get-all-courses -- Get back all the published courses
 			GET /get-course-id/{course id} -- Get back the course with this id
 			GET /get-course-name/{courses name} -- Get back all the courses with this name

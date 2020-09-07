@@ -61,7 +61,6 @@ public class CourseService {
         course.setTitle(courseInfoDto.getTitle());
         course.setDescription(courseInfoDto.getDescription());
         course.setPublished("NO");
-        course.setPublishedOn(Date.from(Instant.now()));
         courseRepository.save(course);
 
         instruction.setCourseId(course.getId());
@@ -73,10 +72,52 @@ public class CourseService {
         enrollment.setUserId(user.getId());
         enrollmentRepository.save(enrollment);
 
-        return new ResponseEntity("Course info added " +
-                "but the course is not published yet, " +
-                "you have to add the lessons " +
-                "and the assignments", HttpStatus.OK);
+        return new ResponseEntity("Course info has " +
+                "been added", HttpStatus.OK);
+    }
+
+    public ResponseEntity publishCourse(long id) {
+        return mapPublishingCourse(id);
+    }
+
+    private ResponseEntity mapPublishingCourse(long id) {
+        Course course = courseRepository.findCourseById(id);
+
+        boolean instruction = utility.checkInstruction(course);
+        if (instruction == false)
+            return new ResponseEntity("You are not an " +
+                    "instructor in this course", HttpStatus.BAD_REQUEST);
+
+        if (course.getPublished().equals("YES"))
+            return new ResponseEntity("The course is " +
+                    "already published", HttpStatus.BAD_REQUEST);
+
+        course.setPublished("YES");
+        course.setPublishedOn(Date.from(Instant.now()));
+        courseRepository.save(course);
+        return new ResponseEntity("The course has been " +
+                "published", HttpStatus.OK);
+    }
+
+    public ResponseEntity hideCourse(long id) {
+        return mapHidingCourse(id);
+    }
+
+    private ResponseEntity mapHidingCourse(long id) {
+        Course course = courseRepository.findCourseById(id);
+        boolean instruction = utility.checkInstruction(course);
+        if (instruction == false)
+            return new ResponseEntity("You are not an " +
+                    "instructor in this course", HttpStatus.BAD_REQUEST);
+
+        if (course.getPublished().equals("NO"))
+            return new ResponseEntity("The course is " +
+                    "already hidden", HttpStatus.BAD_REQUEST);
+
+        course.setPublished("NO");
+        courseRepository.save(course);
+        return new ResponseEntity("The course has been " +
+                "hidden", HttpStatus.OK);
     }
 
     public ResponseEntity<List<Course>> getAllCourses() {
@@ -98,9 +139,9 @@ public class CourseService {
     public ResponseEntity<Course> getCourseById(long id){
         Course course = courseRepository.findCourseById(id);
         course.clearEnrollmentRequests();
-        if (course.getPublished().equals("NO")) {
+        if (course.getPublished().equals("NO"))
             return new ResponseEntity<Course>(HttpStatus.OK);
-        }
+
         boolean enrolled = utility.checkEnrollment(course);
         if (enrolled == false) {
             course.clearEnrollmentRequests();
@@ -136,32 +177,29 @@ public class CourseService {
         Course course = courseRepository.findCourseById(id);
 
         boolean editing = utility.checkInstruction(course);
-        if (editing == false) {
+        if (editing == false)
             return new ResponseEntity("You are not allowed " +
                     "to edit this course", HttpStatus.BAD_REQUEST);
-        }
 
         if (courseInfoDto.getTitle().isEmpty() == true
                 || courseInfoDto.getTitle().isBlank() == true) {
             return new ResponseEntity("Course title can " +
                     "not be empty", HttpStatus.BAD_REQUEST);
         } else {
-            if (courseInfoDto.getTitle() != null) {
+            if (courseInfoDto.getTitle() != null)
                 course.setTitle(courseInfoDto.getTitle());
-            } else {
+            else
                 course.setTitle(course.getTitle());
-            }
         }
         if (courseInfoDto.getDescription().isEmpty() == true
                 || courseInfoDto.getDescription().isBlank() == true) {
             return new ResponseEntity("Course Description " +
                     "can not be empty", HttpStatus.BAD_REQUEST);
         } else {
-            if (courseInfoDto.getDescription() != null) {
+            if (courseInfoDto.getDescription() != null)
                 course.setDescription(courseInfoDto.getDescription());
-            } else {
+            else
                 course.setDescription(course.getDescription());
-            }
         }
 
         courseRepository.save(course);
@@ -182,10 +220,9 @@ public class CourseService {
                 course.getEnrollmentRequests();
 
         boolean delete = utility.checkInstruction(course);
-        if (delete == false) {
+        if (delete == false)
             return new ResponseEntity("You are not allowed" +
                     " to delete this course", HttpStatus.BAD_REQUEST);
-        }
 
         deleteAnythingRelatedToCourse(course, reviews,
                 lessons, assignments, enrollmentRequests);

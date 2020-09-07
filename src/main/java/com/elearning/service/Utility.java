@@ -5,8 +5,6 @@ import com.elearning.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -60,15 +58,6 @@ public class Utility {
         return false;
     }
 
-    public Course publishCourse(Course course) {
-        if(course.getLessons().isEmpty() == false
-                && course.getAssignments().isEmpty() == false) {
-            course.setPublished("YES");
-            course.setPublishedOn(Date.from(Instant.now()));
-        }
-        return course;
-    }
-
     public boolean checkEnrollment(Course course) {
         User user = authService.getCurrUser();
 
@@ -95,13 +84,6 @@ public class Utility {
         return courses;
     }
 
-    public Course checkPublishAfterDeletion(Course course) {
-        if (course.getAssignments().isEmpty() == true
-                || course.getLessons().isEmpty() == true) {
-            course.setPublished("NO");
-        }
-        return course;
-    }
 
     public boolean checkEnrollmentRequest(long id, User user) {
         List<EnrollmentRequest> enrollmentRequests =
