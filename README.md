@@ -1,6 +1,6 @@
 # E-learning
 
-E-learning RESTful API based on Java, SpringBoot, Spring security, JWT, hibernate with MySQL.
+E-learning RESTful API based on Java, SpringBoot, Spring security, JWT, hibernate, MySQL, Docker.
 
 # Overview
 
@@ -19,6 +19,8 @@ E-learning RESTful API based on Java, SpringBoot, Spring security, JWT, hibernat
 - Only enrolled users can add a review(add feedback, add rank -must be out of 5-) for a course, and they are also allowed to edit the review or delete it. But instructors for this course can not add reviews.
 
 - Enrolled users can submit there answers, and the grading system will grade the answers. Instructors can not submit answers.
+
+- If the user submitted more than one answer of the same question only the last submission will be considered.
 
 # Database Design
 
@@ -71,6 +73,6 @@ Follow the same way for each request.
 
 - All inputs and outputs using JSON format.
 
-- If you want to show the JSON format in postman for (lesson, assignment, etc..) remove '@JsonIgnore' annotation from the model classes.
+- If you want to show the JSON format in postman for (lesson, assignment, etc..) remove `@JsonIgnore` annotation from the model classes.
 
-- The questions must be 'True or Flase' question or a math question. The grading system is not ready yet to recieve another type of question.
+- The questions must be `True or Flase` question or a math question. The grading system is not ready yet to receive another type of question.
