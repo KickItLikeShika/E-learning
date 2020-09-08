@@ -24,7 +24,7 @@ E-learning RESTful API based on Java, SpringBoot, Spring security, JWT, hibernat
 
 # Database Design
 
-![database design](https://github.com/KickItLikeShika/E-learning/databasedesign.jpg)
+![database design](https://github.com/KickItLikeShika/E-learning/blob/master/databasedesign.jpg)
 
 
 # REST API Endpoints
