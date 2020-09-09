@@ -1,6 +1,6 @@
 # E-learning
 
-E-learning RESTful API based on Java, SpringBoot, Spring security, JWT, hibernate, MySQL, Docker.
+E-learning application `RESTful API` based on Java, SpringBoot, Spring security, JWT, hibernate, MySQL, Docker.
 
 # Overview
 
